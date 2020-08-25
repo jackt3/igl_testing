@@ -3,6 +3,9 @@ from surf.testing_igl import get_laplacian
 import argparse
 
 def main():
+    """
+    Wrapper for the `get_laplacian` function.
+    """
     # argument handling
     parser = argparse.ArgumentParser(
         description="This script evaluates a given function "

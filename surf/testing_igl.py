@@ -4,6 +4,10 @@ import scipy as sp
 from .functions import *
 
 def write_func_data(fname, vertex_data, surf_gii):
+    """
+    Save functional data to the surface `surf_gii` with name 
+    `fname`.
+    """
     vertex_data = vertex_data.astype(np.float32)
     array = nb.gifti.GiftiDataArray(vertex_data, coordsys=None, datatype=nb.nifti1.data_type_codes['NIFTI_TYPE_FLOAT32'], encoding='GIFTI_ENCODING_ASCII')
     array.coordsys = None
@@ -11,6 +15,12 @@ def write_func_data(fname, vertex_data, surf_gii):
     func_gii.to_filename(fname)
 
 def get_lbo(vertices, faces):
+    """
+    Return the Laplace-Beltrami Operator of the surface defined by 
+    `vertices` and `faces`.
+
+    Currently uses Voronoi areas to calculate the mass matrix.
+    """
     l = igl.cotmatrix(vertices, faces)
     m = igl.massmatrix(vertices, faces, igl.MASSMATRIX_TYPE_VORONOI)
     minv = sp.sparse.diags(1 / m.diagonal())
@@ -18,12 +28,21 @@ def get_lbo(vertices, faces):
     return L
 
 def get_graph_laplacian(faces):
+    """
+    Return the Graph Laplacian of the surface described by faces
+    """
     A = -igl.adjacency_matrix(faces)
     D = A.sum(axis=1)
     A.setdiag(-np.squeeze(np.asarray(D)))
     return A
 
 def get_laplacian(surface_name, function, u_name, lbo_u_name, gl_u_name=None):
+    """
+    Evaluates the given function `function` on the surface `surface_name`. 
+    The Laplacian operator of the provided surface is obtained, as is the 
+    Graph Laplacian if desired. These are then applied to the function 
+    evaluation and saved to the given savenames.
+    """
     # check function is available
     try:
         FUNCS[function]
