@@ -6,7 +6,7 @@ def sumsincos(v):
     the sum of the sine of the y coordinate with the cosine 
     of the z coordinates at each vertex.
     """
-    return np.sin(0.1*v[:, 1]) + np.cos(0.1*v[:, 2])
+    return np.sin(v[:, 1]) + np.cos(v[:, 2])
 
 FUNCS = {
     'sumsincos': sumsincos

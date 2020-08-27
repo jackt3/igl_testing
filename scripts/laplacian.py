@@ -1,6 +1,7 @@
 from surf.functions import  FUNCS
 from surf.testing_igl import get_laplacian
 import argparse
+from surf.areas import AREA_TYPES
 
 def main():
     """
@@ -27,6 +28,17 @@ def main():
             +"to the function, u."
     )
     parser.add_argument(
+        "-m",
+        "--mass_matrix",
+        help="Type of mass matrix to use for the Laplacian computation. "
+            +f"Choose from one of {list(AREA_TYPES.keys())}. Default is "
+            +"Voronoi. "
+            +"Implementation of mayer area is lightly adapted from "
+            +"Tom Kirk's Toblerone module.",
+        default="voronoi",
+        type=str
+    )
+    parser.add_argument(
         "--glu_name",
         help="Savename for the result using the Graph Laplacian.",
         default=None
@@ -48,6 +60,7 @@ def main():
     lbo_u_name = args.Lu_name
     gl_u_name = args.glu_name
     function = args.function
+    mass_type = args.mass_matrix
 
     # do work
-    get_laplacian(surface_name, function, u_name, lbo_u_name, gl_u_name)
+    get_laplacian(surface_name, function, u_name, lbo_u_name, mass_type, gl_u_name)

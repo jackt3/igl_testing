@@ -2,6 +2,7 @@ import igl
 import nibabel as nb
 import scipy as sp
 from .functions import *
+from .areas import get_mass_matrix
 
 def write_func_data(fname, vertex_data, surf_gii):
     """
@@ -14,7 +15,7 @@ def write_func_data(fname, vertex_data, surf_gii):
     func_gii = nb.gifti.GiftiImage(surf_gii.header, darrays=[array])
     func_gii.to_filename(fname)
 
-def get_lbo(vertices, faces):
+def get_lbo(vertices, faces, area_type):
     """
     Return the Laplace-Beltrami Operator of the surface defined by 
     `vertices` and `faces`.
@@ -22,8 +23,8 @@ def get_lbo(vertices, faces):
     Currently uses Voronoi areas to calculate the mass matrix.
     """
     l = igl.cotmatrix(vertices, faces)
-    m = igl.massmatrix(vertices, faces, igl.MASSMATRIX_TYPE_VORONOI)
-    minv = sp.sparse.diags(1 / m.diagonal())
+    m = get_mass_matrix(vertices, faces, area_type)
+    minv = m.power(-1)
     L = -minv.dot(l)
     return L
 
@@ -36,7 +37,7 @@ def get_graph_laplacian(faces):
     A.setdiag(-np.squeeze(np.asarray(D)))
     return A
 
-def get_laplacian(surface_name, function, u_name, lbo_u_name, gl_u_name=None):
+def get_laplacian(surface_name, function, u_name, lbo_u_name, area_type='voronoi', gl_u_name=None):
     """
     Evaluates the given function `function` on the surface `surface_name`. 
     The Laplacian operator of the provided surface is obtained, as is the 
@@ -61,7 +62,7 @@ def get_laplacian(surface_name, function, u_name, lbo_u_name, gl_u_name=None):
     write_func_data(u_name, u, surface)
 
     # calculate laplace-beltrami operator
-    lbo = get_lbo(v, f)
+    lbo = get_lbo(v, f, area_type)
     # apply lbo to function evaluation and save result
     lbo_u = lbo.dot(u)
     write_func_data(lbo_u_name, lbo_u, surface)
