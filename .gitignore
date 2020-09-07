@@ -1,2 +1,3 @@
 testing_igl.egg-info
-*.cpython-38.pyc
+**/__pycache__/*.cpython-38.pyc
+surf/__pycache__/testing_igl.cpython-38.pyc
