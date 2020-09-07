@@ -3,6 +3,7 @@ import nibabel as nb
 import scipy as sp
 from .functions import *
 from .areas import get_mass_matrix
+from .curvatures import analytic_curvature
 
 def write_func_data(fname, vertex_data, surf_gii):
     """
@@ -17,10 +18,23 @@ def write_func_data(fname, vertex_data, surf_gii):
 
 def get_lbo(vertices, faces, area_type):
     """
-    Return the Laplace-Beltrami Operator of the surface defined by 
-    `vertices` and `faces`.
+    Return the Laplace-Beltrami Operator for the surface.
 
-    Currently uses Voronoi areas to calculate the mass matrix.
+    Parameters
+    ----------
+    vertices : np.array
+        (N x 3) array of vertex coordinates.
+    faces : np.array
+        (N x 3) array of faces making up the surface.
+    area_type : str
+        Which definition of vertex area to use for the mass matrix 
+        computation.
+    
+    Returns
+    -------
+    L : scipy sparse array
+        (N x N) sparse weighting matrix constituting the Laplace-
+        Beltrami Operator for this surface.
     """
     l = igl.cotmatrix(vertices, faces)
     m = get_mass_matrix(vertices, faces, area_type)
@@ -37,7 +51,7 @@ def get_graph_laplacian(faces):
     A.setdiag(-np.squeeze(np.asarray(D)))
     return A
 
-def get_laplacian(surface_name, function, u_name, lbo_u_name, area_type='voronoi', gl_u_name=None):
+def get_laplacian(surface_name, function, u_name, lbo_u_name, s=1.0, area_type='voronoi', gl_u_name=None, an_base=None):
     """
     Evaluates the given function `function` on the surface `surface_name`. 
     The Laplacian operator of the provided surface is obtained, as is the 
@@ -57,7 +71,7 @@ def get_laplacian(surface_name, function, u_name, lbo_u_name, area_type='voronoi
     v, f = surface.agg_data()
 
     # evaluate chosen function on surface's vertices' positions
-    u = FUNCS[function](v)
+    u = FUNCS[function](v, s)
     # save u as .func.gii for visualisation
     write_func_data(u_name, u, surface)
 
@@ -72,3 +86,22 @@ def get_laplacian(surface_name, function, u_name, lbo_u_name, area_type='voronoi
         gl = get_graph_laplacian(f)
         gl_u = gl.dot(u)
         write_func_data(gl_u_name, gl_u, surface)
+    
+    if an_base:
+        # user wants to compare against analytic curvature 
+        # for the surface / function
+        # get and save analytic curvature
+        an_curv = analytic_curvature(v, function, s)
+        an_curv_name = an_base + ".func.gii"
+        write_func_data(an_curv_name, an_curv, surface)
+
+        # save squared difference between analytic and 
+        # calculated curvatures for comparison
+        diff_an_lbo = np.square(an_curv - lbo_u)
+        diff_lbo_name = an_base + "diff_lbo.func.gii"
+        write_func_data(diff_lbo_name, diff_an_lbo, surface)
+
+        if gl_u_name:
+            diff_an_gl = np.square(an_curv - gl_u)
+            diff_gl_name = an_base + "diff_gl.func.gii"
+            write_func_data(diff_gl_name, diff_an_gl, surface)

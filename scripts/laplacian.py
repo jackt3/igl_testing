@@ -1,4 +1,5 @@
 from surf.functions import  FUNCS
+from surf.curvatures import CURVS
 from surf.testing_igl import get_laplacian
 import argparse
 from surf.areas import AREA_TYPES
@@ -17,6 +18,13 @@ def main():
     parser.add_argument(
         "surface",
         help="The surface on which to evaluate and save."
+    )
+    parser.add_argument(
+        "-s",
+        "--speed",
+        help="Speed at which the function varies. Default is 1.0.",
+        default=1.0,
+        type=float
     )
     parser.add_argument(
         "u_name",
@@ -52,15 +60,26 @@ def main():
         default="sumsincos",
         type=str
     )
+    parser.add_argument(
+        "-a",
+        "--analytic",
+        help="Compare against analytic curvature and save results "
+            +"with the basename provided via this argument. This "
+            +f"is available for {list(CURVS.keys())}. By default "
+            "this is not required.",
+        default=None
+    )
 
     # parse arguments
     args = parser.parse_args()
     surface_name = args.surface
+    s = args.speed
     u_name = args.u_name
     lbo_u_name = args.Lu_name
     gl_u_name = args.glu_name
     function = args.function
     mass_type = args.mass_matrix
+    an_name = args.analytic
 
     # do work
-    get_laplacian(surface_name, function, u_name, lbo_u_name, mass_type, gl_u_name)
+    get_laplacian(surface_name, function, u_name, lbo_u_name, s, mass_type, gl_u_name, an_name)

@@ -25,9 +25,12 @@ CURVS = {
     'sumsincos': curv_sincos
 }
 
-def analytic_curvature(v, func, s):
+def analytic_curvature(v, func, s=1.0):
     """
     Return the analytical curvature of the function `func`.
+
+    Will throw an error if analytic curvature has not been 
+    defined for this function.
 
     Parameters
     ----------
@@ -35,13 +38,19 @@ def analytic_curvature(v, func, s):
         Array of vertex coordinates.
     func : str
         Function which has been evaluated on the surface.
+    s : float
+        Speed at which the function varies.
     
     Returns
     -------
     Lf : numpy array
-        Array of curvature at each vertex.
+        (N x 1) array of curvatures at each vertex.
     """
 
-    curv_func = CURVS[func]
+    try:
+        curv_func = CURVS[func]
+    except KeyError:
+        print("The analytic curvature is not defined"
+            +" for your chosen function!")
     Lf = curv_func(v, s)
     return Lf
