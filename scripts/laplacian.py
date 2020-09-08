@@ -1,12 +1,12 @@
-from surf.functions import  FUNCS
-from surf.curvatures import CURVS
-from surf.testing_igl import get_laplacian
+from igl_testing.functions import  FUNCS
+from igl_testing.curvatures import CURVS
+from igl_testing.testing_igl import evaluate
 import argparse
-from surf.areas import AREA_TYPES
+from igl_testing.areas import AREA_TYPES
 
 def main():
     """
-    Wrapper for the `get_laplacian` function.
+    Wrapper for the `evaluate` function.
     """
     # argument handling
     parser = argparse.ArgumentParser(
@@ -82,4 +82,4 @@ def main():
     an_name = args.analytic
 
     # do work
-    get_laplacian(surface_name, function, u_name, lbo_u_name, s, mass_type, gl_u_name, an_name)
+    evaluate(surface_name, function, u_name, lbo_u_name, s, mass_type, gl_u_name, an_name)
