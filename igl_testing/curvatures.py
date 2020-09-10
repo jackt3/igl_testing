@@ -1,7 +1,7 @@
 import numpy as np
 from .functions import *
 
-def curv_sincos(v, s=1.0):
+def curv_sincosxy(v, s=1.0):
     """
     Evaluate the curvature of the sin+cos function.
 
@@ -17,12 +17,54 @@ def curv_sincos(v, s=1.0):
     Lf : np.array
         (Nx1) array of curvature evaluations.
     """
-    f = sumsincos(v, s)
+    f = sumsincosxy(v, s)
+    Lf = (s**2) * f
+    return Lf
+
+def curv_sincosxz(v, s=1.0):
+    """
+    Evaluate the curvature of the sin+cos function.
+
+    Parameters
+    ----------
+    v : np.array
+        (Nx3) array of vertex coordinates.
+    s : float, optional
+        Modifies the periodicity of the function.
+    
+    Returns
+    -------
+    Lf : np.array
+        (Nx1) array of curvature evaluations.
+    """
+    f = sumsincosxz(v, s)
+    Lf = (s**2) * f
+    return Lf
+
+def curv_sincosyz(v, s=1.0):
+    """
+    Evaluate the curvature of the sin+cos function.
+
+    Parameters
+    ----------
+    v : np.array
+        (Nx3) array of vertex coordinates.
+    s : float, optional
+        Modifies the periodicity of the function.
+    
+    Returns
+    -------
+    Lf : np.array
+        (Nx1) array of curvature evaluations.
+    """
+    f = sumsincosyz(v, s)
     Lf = (s**2) * f
     return Lf
 
 CURVS = {
-    'sumsincos': curv_sincos
+    'sumsincosxy': curv_sincosxy,
+    'sumsincosxz': curv_sincosxz,
+    'sumsincosyz': curv_sincosyz
 }
 
 def analytic_curvature(v, func, s=1.0):
