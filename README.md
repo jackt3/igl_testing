@@ -7,7 +7,7 @@ This is a small module containing functions which makes it easy to test the effe
 It is recommended that you install this in its own conda environment. igl and meshplot must be installed via conda. It is recommended you follow the steps below:
 
 ```
-conda create --name igl_env igl meshplot
+conda create --name igl_env -c conda-forge igl meshplot
 conda activate igl_env
 git clone https://github.com/jackt3/igl_testing.git
 cd igl_testing
