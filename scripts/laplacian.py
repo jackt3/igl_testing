@@ -57,7 +57,7 @@ def main():
         help="The function to evaluate on the given surface." 
             +"This should be one of:"
             +f"{list(FUNCS.keys())}",
-        default="sumsincos",
+        default="sumsincosxy",
         type=str
     )
     parser.add_argument(
