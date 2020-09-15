@@ -16,7 +16,11 @@ python -m pip install -U .
 
 As well as igl and meshplot, the module also has several other requirements, including numpy, scipy and nibabel.
 
-igl doesn't seem to be happy being installed with toblerone as there is a conflict (update this when I discover what the conflict is) so please do install in its own environment. Also, meshplot isn't currently being used but seems to be needed for a successful installation of igl (again upidate when I discover why).
+If this is to be installed alongside Toblerone (or another module requiring Python 3.7) please use the adjusted command below to create your conda environment:
+
+```
+conda create --name igl_env -c conda-forge python=3.7 igl meshplot
+```
 
 ## Usage
 
